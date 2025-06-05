@@ -1,0 +1,269 @@
+import React, {useState} from 'react';
+import {format} from 'date-fns';
+import "./reminder.css";
+
+const ReminderApp = () => {
+  const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [form, setForm] = useState({ taskName: '', dueDate: '', description: '' });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    if (!form.taskName || !form.dueDate) return;
+    const newTask = {
+      id: Date.now(),
+      ...form,
+      completed: false,
+    };
+    setTasks((prev) => [...prev, newTask]);
+    setForm({ taskName: '', dueDate: '', description: '' });
+  };
+
+  const toggleCompletion = (id) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'completed') return task.completed;
+    if (filter === 'incomplete') return !task.completed;
+    return true;
+  });
+
+  return (
+    <div className="container">
+      <h1 className="title">Reminder Application</h1>
+      <form onSubmit={handleAddTask} className="form">
+        <input
+          name="taskName"
+          type="text"
+          placeholder="Task Name"
+          value={form.taskName}
+          onChange={handleChange}
+          className="input"
+          required
+        />
+
+        <input
+          name="dueDate"
+          type="date"
+          value={form.dueDate}
+          onChange={handleChange}
+          className="input"
+          required
+        />
+
+        <textarea
+          name="description"
+          placeholder="Optional Description"
+          value={form.description}
+          onChange={handleChange}
+          className="textarea"
+        />
+        <button type="submit" className="btn-submit">
+          Add Task
+        </button>
+      </form>
+      <div className="filter-group">
+        <button onClick={() => setFilter('all')} className="btn-filter">
+          All Tasks
+        </button>
+
+        <button onClick={() => setFilter('completed')} className="btn-filter">
+          Completed
+        </button>
+
+        <button onClick={() => setFilter('incomplete')} className="btn-filter">
+          Incomplete
+        </button>
+      </div>
+      <ul className="task-list">
+        {filteredTasks.map((task) => (
+          <li
+            key={task.id}
+            className={`task-item ${task.completed ? 'completed' : 'incomplete'}`}
+          >
+            <div className="task-row">
+              <div>
+                <h3 className="task-title">{task.taskName}</h3>
+                <p className="task-date">Due: {format(new Date(task.dueDate), 'PPP')}</p>
+                {task.description && <p className="task-desc">{task.description}</p>}
+              </div>
+              <button
+                onClick={() => toggleCompletion(task.id)}
+                className="btn-toggle"
+              >
+                {task.completed ? 'Mark Incomplete' : 'Mark Completed'}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default ReminderApp;
+//Reminder.css
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
+    margin: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  /* Form Styles */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .input,
+  .textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .input {
+    height: 40px;
+  }
+  
+  .textarea {
+    resize: vertical;
+    height: 100px;
+  }
+  
+  .btn-submit {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-submit:hover {
+    background-color: #45a049;
+  }
+  
+  /* Filter Buttons */
+  .filter-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .btn-filter {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-filter:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Task List Styles */
+  .task-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .task-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .task-item.completed {
+    background-color: #d4edda;
+  }
+  
+  .task-item.incomplete {
+    background-color: #f8d7da;
+  }
+  
+  .task-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .task-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .task-date {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .task-desc {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .btn-toggle {
+    background-color: #ffc107;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-toggle:hover {
+    background-color: #e0a800;
+  }
+  

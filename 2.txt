@@ -1,0 +1,60 @@
+import { useState } from 'react'
+
+import './App.css'
+
+function App() {
+  const [text, settext] = useState('')
+
+  return (
+    
+    <div className="Apps">
+      <h1>Character Counter</h1>
+    <input type="text" placeholder="Type something..." value={text} onChange={(e) => settext(e.target.value)}
+    />
+    <h1>{text}</h1>
+    <p>character count:{text.length}</p>
+      
+      </div>
+    );
+    }
+
+export default Appimport React from 'react';
+import Header from './Header.jsx';
+import Footer from './Footer.jsx';
+import './App.css';
+
+function App() {
+  const title = "Welcome to My React App";
+  const tagline = "Building great apps with React";
+  const copyright = "© 2025 MyReactApp. All rights reserved.";
+
+  return (
+    <div className="App">
+      <Header title={title} />
+      <Footer tagline={tagline} copyright={copyright} />
+    </div>
+  );
+}
+
+export default App;
+//Header.jsx
+import React from 'react';
+
+const Header = ({ title }) => (
+  <header>
+    <h1>{title}</h1>
+  </header>
+);
+
+export default Header;
+//Footer.jsx
+import React from 'react';
+
+const Footer = ({ tagline, copyright }) => (
+  <footer>
+    <p>{tagline}</p>
+    <p>{copyright}</p>
+  </footer>
+);
+
+export default Footer;
